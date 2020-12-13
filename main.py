@@ -109,4 +109,4 @@ if __name__ == "__main__":
     df_updated = pd.DataFrame(out_data)
     print(df_updated)
     # TODO: csv parser and don't import pandas
-    df_updated.to_csv(os.path.splitext(input_file)[0] + "_with_synonyms.csv")
+    df_updated.to_csv(os.path.splitext(input_file)[0] + "_with_synonyms.csv", sep=";")
