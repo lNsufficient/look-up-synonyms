@@ -40,6 +40,7 @@ class synonymer_dot_se(lookup_website):
 
     def word_url(self, word):
         #TODO: Take care of special characters
+        word = word.replace(' ', '-')
         return r"https://www.synonymer.se/sv-syn/" + word
 
     def lookup_word(self, word):
