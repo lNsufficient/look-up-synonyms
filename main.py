@@ -36,6 +36,7 @@ class synonymer_dot_se(lookup_website):
         self.print_next_end_tag = False
 
     def synonym_url(self, word):
+        #TODO: Take care of special characters
         return r"https://www.synonymer.se/sv-syn/" + word
 
     def lookup_word(self, word):
