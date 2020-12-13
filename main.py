@@ -1,10 +1,11 @@
-from urllib.request import urlopen
-from queue import LifoQueue
-from bs4 import BeautifulSoup
-import re
-import pandas as pd
-import sys
 import os
+import sys
+import re
+from queue import LifoQueue
+from urllib.request import urlopen
+
+from bs4 import BeautifulSoup
+import pandas as pd
 
 
 class lookup_website:
