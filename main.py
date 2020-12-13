@@ -48,24 +48,28 @@ class synonymer_dot_se(lookup_website):
         url = self.word_url(word)
         website_text = self.fetch_website_text(url)
         self.soup = BeautifulSoup(website_text, "html.parser")
-        synonyms = self.lookup_synonyms()
-        return synonyms
-
-    def lookup_synonyms(self):
         dictResult = self.soup.find("div", class_="DictResult")
+        synonyms = self.lookup_synonyms(dictResult)
+        meaning = self.lookup_meaning(dictResult)
+        return synonyms, meaning
 
+    def lookup_synonyms(self, dictResult):
         dictDefault = dictResult.find("div", id="dict-default")
         if dictDefault:
             dictDefaultBodyText = dictDefault.find("div", class_="body").get_text()
             synonyms = self.strip_whitespaces(dictDefaultBodyText)
         else:
             synonyms = "(no synonyms found)"
-        
+        return synonyms
+
+    def lookup_meaning(self, dictResult):        
         meaning_div = dictResult.find("div", id="bso")
         if meaning_div:
             meaning_text = meaning_div.find("div", class_="body").get_text()
             meaning = self.strip_whitespaces(meaning_text)
-        return synonyms, meaning
+        else:
+            meaning = "(no meaning found)"
+        return meaning
         # print(website_parsed)
 
 
