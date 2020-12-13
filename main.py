@@ -3,6 +3,7 @@ import sys
 import re
 from queue import LifoQueue
 from urllib.request import urlopen
+from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -16,6 +17,7 @@ class lookup_website:
         pass
 
     def fetch_website_text(self, url):
+        url = quote(url,safe="://åäö")
         with urlopen(url) as f:
             text = f.read()
         return text
