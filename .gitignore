@@ -1,6 +1,6 @@
 #vim
 *.swp
-
+*_with_synonyms.csv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
