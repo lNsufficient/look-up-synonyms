@@ -3,7 +3,6 @@ import sys
 import re
 from queue import LifoQueue
 from urllib.request import urlopen
-from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -17,7 +16,6 @@ class lookup_website:
         pass
 
     def fetch_website_text(self, url):
-        url = quote(url.encode('utf-8'))
         with urlopen(url) as f:
             text = f.read()
         return text
@@ -44,7 +42,6 @@ class synonymer_dot_se(lookup_website):
 
     def lookup_word(self, word):
         url = self.word_url(word)
-        print("url:" + str(url))
         website_text = self.fetch_website_text(url)
         self.soup = BeautifulSoup(website_text, "html.parser")
         synonyms = self.lookup_synonyms()
@@ -79,8 +76,11 @@ if __name__ == "__main__":
         print(word)
         row_out[word_column] = word
         
-        # TODO: Append to row instead if it exists.
-        row_out[synonym_column] = synonymer_se.lookup_word(word)
+        try:
+            # TODO: Append to row instead if it exists.
+            row_out[synonym_column] = synonymer_se.lookup_word(word)
+        except:
+            row_out[synonym_column] = "failed looking up: " + str(word)
 
         row_out[note_column] = row_in[note_column]
     
