@@ -52,10 +52,19 @@ class synonymer_dot_se(lookup_website):
 
     def lookup_synonyms(self):
         dictResult = self.soup.find("div", class_="DictResult")
+
         dictDefault = dictResult.find("div", id="dict-default")
-        dictDefaultBodyText = dictDefault.find("div", class_="body").get_text()
-        synonyms = self.strip_whitespaces(dictDefaultBodyText)
-        return synonyms
+        if dictDefault:
+            dictDefaultBodyText = dictDefault.find("div", class_="body").get_text()
+            synonyms = self.strip_whitespaces(dictDefaultBodyText)
+        else:
+            synonyms = "(no synonyms found)"
+        
+        meaning_div = dictResult.find("div", id="bso")
+        if meaning_div:
+            meaning_text = meaning_div.find("div", class_="body").get_text()
+            meaning = self.strip_whitespaces(meaning_text)
+        return synonyms, meaning
         # print(website_parsed)
 
 
@@ -72,6 +81,7 @@ if __name__ == "__main__":
     print(list_of_dicts)
     word_column = "quote"  # TODO: Automatic
     synonym_column = "synonyms"
+    meaning_column = "meaning"
     note_column = "note"
     out_data = [{} for _ in list_of_dicts]
     for row_in, row_out in zip(list_of_dicts, out_data):
@@ -81,10 +91,14 @@ if __name__ == "__main__":
         
         try:
             # TODO: Append to row instead if it exists.
-            row_out[synonym_column] = synonymer_se.lookup_word(word)
+            synonyms, meaning = synonymer_se.lookup_word(word)
         except:
-            row_out[synonym_column] = "failed looking up: " + str(word)
+            error_text = "failed looking up word"
+            synonyms = error_text
+            meaning = error_text
 
+        row_out[synonym_column] = synonyms
+        row_out[meaning_column] = meaning 
         row_out[note_column] = row_in[note_column]
     
     df_updated = pd.DataFrame(out_data)
