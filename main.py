@@ -35,17 +35,30 @@ class lookup_website:
 
 
 class synonymer_dot_se(lookup_website):
-    def __init__(self):
+    def __init__(self, debug_text=False):
         super(synonymer_dot_se, self).__init__()
         self.print_next_end_tag = False
+        debug_attrs_vals = [
+            ("too_long_word", "(word too long)"),
+            ("no_meaning_found", "(no meaning found)"),
+            ("no_synonyms_found", "(no synonyms found)"),
+        ]
+        if not debug_text:
+            debug_attrs_vals = [(attr, "") for attr, _ in debug_attrs_vals]
+        for attr, val in debug_attrs_vals:
+            setattr(self, attr, val)
 
     def word_url(self, word):
         #TODO: Take care of special characters
         word = word.replace(' ', '-')
+        if len(word)>30:
+            return None #Synonymer.se only supports 30-length words
         return r"https://www.synonymer.se/sv-syn/" + word
 
     def lookup_word(self, word):
         url = self.word_url(word)
+        if url is None:
+            return (self.too_long_word,)*2 
         website_text = self.fetch_website_text(url)
         self.soup = BeautifulSoup(website_text, "html.parser")
         dictResult = self.soup.find("div", class_="DictResult")
@@ -59,7 +72,7 @@ class synonymer_dot_se(lookup_website):
             dictDefaultBodyText = dictDefault.find("div", class_="body").get_text()
             synonyms = self.strip_whitespaces(dictDefaultBodyText)
         else:
-            synonyms = "(no synonyms found)"
+            synonyms = self.no_synonyms_found
         return synonyms
 
     def lookup_meaning(self, dictResult):        
@@ -68,7 +81,7 @@ class synonymer_dot_se(lookup_website):
             meaning_text = meaning_div.find("div", class_="body").get_text()
             meaning = self.strip_whitespaces(meaning_text)
         else:
-            meaning = "(no meaning found)"
+            meaning = self.no_meaning_found
         return meaning
         # print(website_parsed)
 
@@ -82,7 +95,7 @@ if __name__ == "__main__":
     df = pd.read_csv(input_file)  # TODO: csv parser and don't import pandas
     # don't use df.apply since pandas will be removed.
     list_of_dicts = df.to_dict("records")
-    synonymer_se = synonymer_dot_se()
+    synonymer_se = synonymer_dot_se(debug_text=True)
     print(list_of_dicts)
     word_column = "quote"  # TODO: Automatic
     synonym_column = "synonyms"
