@@ -69,14 +69,22 @@ if __name__ == "__main__":
     print(list_of_dicts)
     word_column = "quote"  # TODO: Automatic
     synonym_column = "synonyms"
-    for row in list_of_dicts:
-        word = row[word_column]
+    note_column = "note"
+    out_data = [{} for _ in list_of_dicts]
+    for row_in, row_out in zip(list_of_dicts, out_data):
+        word = row_in[word_column]
+        print(word)
+        row_out[word_column] = word
+        
         try:
             # TODO: Append to row instead if it exists.
-            row[synonym_column] = synonymer_se.lookup_word(word)
+            row_out[synonym_column] = synonymer_se.lookup_word(word)
         except:
-            row[synonym_column] = "failed looking up: " + str(word)
-    df_updated = pd.DataFrame(list_of_dicts)
+            row_out[synonym_column] = "failed looking up: " + str(word)
+
+        row_out[note_column] = row_in[note_column]
+    
+    df_updated = pd.DataFrame(out_data)
     print(df_updated)
     # TODO: csv parser and don't import pandas
     df_updated.to_csv(os.path.splitext(input_file)[0] + "_with_synonyms.csv")
