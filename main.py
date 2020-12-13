@@ -12,7 +12,7 @@ class lookup_website:
     def __init__(self):
         pass
 
-    def lookup_synonym(self, word):
+    def lookup_word(self, word):
         pass
 
     def fetch_website_text(self, url):
@@ -36,12 +36,12 @@ class synonymer_dot_se(lookup_website):
         super(synonymer_dot_se, self).__init__()
         self.print_next_end_tag = False
 
-    def synonym_url(self, word):
+    def word_url(self, word):
         #TODO: Take care of special characters
         return r"https://www.synonymer.se/sv-syn/" + word
 
     def lookup_word(self, word):
-        url = self.synonym_url(word)
+        url = self.word_url(word)
         website_text = self.fetch_website_text(url)
         self.soup = BeautifulSoup(website_text, "html.parser")
         synonyms = self.lookup_synonyms()
