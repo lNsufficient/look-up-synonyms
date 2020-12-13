@@ -23,10 +23,11 @@ class lookup_website:
         return text
 
     def strip_whitespaces(self, string):
-        string = re.sub(r"\s", ",", string)
+        string = re.sub(r"\s", " ", string)
+        string = re.sub(r"\ +", " ", string)
         string = re.sub(r",+", ",", string)
         string = re.sub(r";,", ";", string)
-        string = re.sub(r"(^,)|(,$)", "", string)
+        string = re.sub(r"(^(,|\ ))|((,|\ )$)", "", string)
         return string
 
     # TODO: keep track of last call timestamp to prevent website block
