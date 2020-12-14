@@ -17,7 +17,7 @@ class lookup_website:
         pass
 
     def fetch_website_text(self, url):
-        url = quote(url,safe="://åäö")
+        url = quote(url, safe="://åäö")
         with urlopen(url) as f:
             text = f.read()
         return text
@@ -49,16 +49,16 @@ class synonymer_dot_se(lookup_website):
             setattr(self, attr, val)
 
     def word_url(self, word):
-        #TODO: Take care of special characters
-        word = word.replace(' ', '-')
-        if len(word)>30:
-            return None #Synonymer.se only supports 30-length words
+        # TODO: Take care of special characters
+        word = word.replace(" ", "-")
+        if len(word) > 30:
+            return None  # Synonymer.se only supports 30-length words
         return r"https://www.synonymer.se/sv-syn/" + word
 
     def lookup_word(self, word):
         url = self.word_url(word)
         if url is None:
-            return (self.too_long_word,)*2 
+            return (self.too_long_word,) * 2
         website_text = self.fetch_website_text(url)
         self.soup = BeautifulSoup(website_text, "html.parser")
         dictResult = self.soup.find("div", class_="DictResult")
@@ -75,7 +75,7 @@ class synonymer_dot_se(lookup_website):
             synonyms = self.no_synonyms_found
         return synonyms
 
-    def lookup_meaning(self, dictResult):        
+    def lookup_meaning(self, dictResult):
         meaning_div = dictResult.find("div", id="bso")
         if meaning_div:
             meaning_text = meaning_div.find("div", class_="body").get_text()
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         word = row_in[word_column]
         print(word)
         row_out[word_column] = word
-        
+
         try:
             # TODO: Append to row instead if it exists.
             synonyms, meaning = synonymer_se.lookup_word(word)
@@ -136,9 +136,9 @@ if __name__ == "__main__":
             meaning = error_text
 
         row_out[synonym_column] = synonyms
-        row_out[meaning_column] = meaning 
+        row_out[meaning_column] = meaning
         row_out[note_column] = row_in[note_column]
-    
+
     df_updated = pd.DataFrame(out_data)
     print(df_updated)
     # TODO: csv parser and don't import pandas
