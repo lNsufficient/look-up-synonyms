@@ -89,13 +89,33 @@ class synonymer_dot_se(lookup_website):
 # TODO: class wikipedia (ingress), google (first result)
 
 
+def pretty_print(word, synonyms, meaning):
+    synonym_text, meaning_text, separator = ("", "", "")
+    if synonyms:
+        synonym_text = "SYNONYMS: " + synonyms
+
+    if meaning:
+        meaning_text = "MEANING: " + meaning
+
+    if synonym_text and meaning_text:
+        separator = ". "
+
+    if synonym_text or meaning_text:
+        word_spacing = " " * max((15 - len(word)), 1)
+        return (
+            word.upper() + word_spacing + "| " + synonym_text + separator + meaning_text
+        )
+    else:
+        return ""
+
+
 if __name__ == "__main__":
     print("test")
     input_file = sys.argv[1]  # TODO: replace using click()
     df = pd.read_csv(input_file)  # TODO: csv parser and don't import pandas
     # don't use df.apply since pandas will be removed.
     list_of_dicts = df.to_dict("records")
-    synonymer_se = synonymer_dot_se(debug_text=True)
+    synonymer_se = synonymer_dot_se(debug_text=False)
     print(list_of_dicts)
     word_column = "quote"  # TODO: Automatic
     synonym_column = "synonyms"
@@ -123,3 +143,12 @@ if __name__ == "__main__":
     print(df_updated)
     # TODO: csv parser and don't import pandas
     df_updated.to_csv(os.path.splitext(input_file)[0] + "_with_synonyms.csv", sep=";")
+    list_of_strings = [
+        pretty_print(row[word_column], row[synonym_column], row[meaning_column])
+        for row in out_data
+    ]
+    list_of_strings = [e for e in list_of_strings if e]  # Remove empty lines
+
+    text_file_path = os.path.splitext(input_file)[0] + ".txt"
+    with open(text_file_path, "w") as text_file:
+        text_file.write("\n".join(list_of_strings))
